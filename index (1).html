@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!--
+  ============================================================================
+  NAQSH — Luxury Fragrance House
+  ============================================================================
+  WHERE TO EDIT THINGS (no need to read the rest of this file):
+
+  1. CONTACT INFO, SOCIAL LINKS, PRODUCTS, NOTES  →  search for "EDIT ME: CONFIG"
+     in the <script> near the bottom of this file. Everything there is one
+     JavaScript object. Change values, add/remove products, done.
+
+  2. COLORS  →  search for "EDIT ME: COLORS" in the <style> block. Six CSS
+     variables control the entire palette.
+
+  3. FONTS  →  search for "EDIT ME: FONTS". Two Google Fonts, swap the
+     <link> and the two --font variables together.
+
+  4. BRAND TEXT (headline, about copy, story, quote)  →  these are written
+     directly in the HTML body because they're brand voice, not data. Search
+     for "EDIT ME:" comments placed above each block (hero, about, story,
+     signature, quote, newsletter).
+
+  5. LOGO / WORDMARK  →  currently a styled text wordmark ("NAQSH"), search
+     "EDIT ME: LOGO". Replace with an <img> if you commission a mark.
+
+  Everything else (layout, animation, responsiveness) you shouldn't need to
+  touch.
+  ============================================================================
+-->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NAQSH — Where Fragrance Becomes Identity</title>
+<meta name="description" content="NAQSH is a luxury fragrance house. Every scent is an imprint — a mark of identity, memory and presence. Discover the collection.">
+<meta name="theme-color" content="#12100D">
+
+<!-- Open Graph -->
+<meta property="og:title" content="NAQSH — Where Fragrance Becomes Identity">
+<meta property="og:description" content="A luxury fragrance house built on the idea of the imprint — scent as a mark you leave behind.">
+<meta property="og:type" content="website">
+
+<!-- Favicon placeholder — EDIT ME: replace with your own favicon file -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%2312100D'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' fill='%23EFE7D8' font-family='serif'%3EN%3C/text%3E%3C/svg%3E">
+
+<!-- EDIT ME: FONTS — swap these two families together with the CSS vars below -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400;1,9..144,500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ==========================================================================
+     TOKENS
+  ========================================================================== */
+  :root{
+    /* EDIT ME: COLORS — the entire palette lives here */
+    --ink:        #12100D;   /* primary background, warm near-black */
+    --ink-2:      #1C1815;   /* secondary surface, slightly lighter */
+    --ivory:      #EFE7D8;   /* primary text / light surfaces */
+    --ivory-dim:  #B9AF9C;   /* secondary / muted text */
+    --gold:       #A9835A;   /* accent — used sparingly, never as a fill */
+    --line:       rgba(239,231,216,0.14); /* hairline dividers */
+
+    /* EDIT ME: FONTS */
+    --font-display: 'Fraunces', serif;
+    --font-body: 'Sora', sans-serif;
+
+    --container: 1180px;
+    --edge: clamp(24px, 5vw, 72px);
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    background:var(--ink);
+    color:var(--ivory);
+    font-family:var(--font-body);
+    font-weight:300;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  img,svg{ display:block; max-width:100%; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+  input{ font-family:inherit; }
+
+  .wrap{ max-width:var(--container); margin:0 auto; padding-left:var(--edge); padding-right:var(--edge); }
+
+  h1,h2,h3,h4{ font-family:var(--font-display); font-weight:400; line-height:1.12; letter-spacing:0.005em; }
+
+  .eyebrow{
+    font-family:var(--font-body); font-size:0.78rem; letter-spacing:0.14em;
+    color:var(--gold); font-weight:500; display:inline-block; margin-bottom:18px;
+  }
+
+  .lede{ color:var(--ivory-dim); font-size:1.05rem; max-width:46ch; }
+
+  .btn{
+    display:inline-flex; align-items:center; gap:10px;
+    padding:16px 34px; font-size:0.92rem; letter-spacing:0.03em;
+    border:1px solid var(--ivory); background:transparent; color:var(--ivory);
+    transition:background .45s ease, color .45s ease, border-color .45s ease;
+  }
+  .btn:hover{ background:var(--ivory); color:var(--ink); }
+  .btn-ghost{
+    border:none; padding:12px 0; position:relative; color:var(--ivory-dim);
+  }
+  .btn-ghost::after{
+    content:''; position:absolute; left:0; right:0; bottom:8px; height:1px;
+    background:var(--gold); transform:scaleX(0); transform-origin:left;
+    transition:transform .5s ease;
+  }
+  .btn-ghost:hover{ color:var(--ivory); }
+  .btn-ghost:hover::after{ transform:scaleX(1); }
+
+  section{ position:relative; }
+
+  .reveal{ opacity:0; transform:translateY(28px); transition:opacity .9s ease, transform .9s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* ==========================================================================
+     SCROLL PROGRESS
+  ========================================================================== */
+  #progress{
+    position:fixed; top:0; left:0; height:2px; width:0%;
+    background:var(--gold); z-index:2000; transition:width .1s linear;
+  }
+
+  /* ==========================================================================
+     HEADER
+  ========================================================================== */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    padding:28px 0; transition:background .5s ease, padding .5s ease, border-color .5s ease;
+    border-bottom:1px solid transparent;
+  }
+  header.scrolled{
+    padding:18px 0; background:rgba(18,16,13,0.86); backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{ display:flex; align-items:center; justify-content:space-between; }
+
+  /* EDIT ME: LOGO */
+  .logo{ font-family:var(--font-display); font-size:1.5rem; letter-spacing:0.06em; color:var(--ivory); }
+
+  nav.links{ display:flex; align-items:center; gap:40px; }
+  nav.links a:not(.btn){
+    font-size:0.88rem; color:var(--ivory-dim); position:relative; transition:color .3s ease;
+  }
+  nav.links a:not(.btn):hover{ color:var(--ivory); }
+  nav.links a:not(.btn)::after{
+    content:''; position:absolute; left:0; bottom:-6px; width:0; height:1px;
+    background:var(--gold); transition:width .35s ease;
+  }
+  nav.links a:not(.btn):hover::after{ width:100%; }
+
+  .hamburger{ display:none; flex-direction:column; gap:6px; width:28px; background:none; border:none; z-index:1100; }
+  .hamburger span{ height:1px; width:100%; background:var(--ivory); transition:transform .35s ease, opacity .35s ease; }
+  .hamburger.open span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2){ opacity:0; }
+  .hamburger.open span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+
+  .mobile-panel{
+    position:fixed; inset:0; background:var(--ink); z-index:1050;
+    display:flex; flex-direction:column; align-items:flex-start; justify-content:center;
+    gap:28px; padding:0 var(--edge);
+    transform:translateY(-100%); transition:transform .5s cubic-bezier(.7,0,.2,1);
+  }
+  .mobile-panel.open{ transform:translateY(0); }
+  .mobile-panel a{ font-family:var(--font-display); font-size:2rem; color:var(--ivory); }
+
+  /* ==========================================================================
+     HERO
+  ========================================================================== */
+  .hero{
+    min-height:100vh; display:flex; align-items:center; position:relative;
+    padding-top:120px; padding-bottom:80px;
+    background:
+      radial-gradient(ellipse 70% 60% at 78% 30%, rgba(169,131,90,0.10), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 15% 85%, rgba(169,131,90,0.06), transparent 60%),
+      var(--ink);
+  }
+  .hero::before{ /* film grain */
+    content:''; position:absolute; inset:0; opacity:0.05; pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .hero-inner{ position:relative; z-index:2; display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:center; width:100%; }
+  .hero-mark{ position:absolute; right:-4%; top:50%; transform:translateY(-50%); width:52%; opacity:0.9; z-index:1; pointer-events:none; }
+  .hero-mark path{ stroke-dasharray:2400; stroke-dashoffset:2400; animation:draw 2.6s ease forwards 0.3s; }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+
+  .hero h1{ font-size:clamp(2.6rem, 5.6vw, 4.6rem); color:var(--ivory); margin-bottom:26px; }
+  .hero h1 em{ font-style:italic; color:var(--ivory); }
+  .hero-cta{ display:flex; align-items:center; gap:34px; margin-top:40px; flex-wrap:wrap; }
+  .kicker-word{ font-family:var(--font-display); font-size:1.15rem; letter-spacing:0.35em; color:var(--ivory-dim); margin-bottom:22px; display:block; }
+
+  /* ==========================================================================
+     SECTION SPACING / HEADERS
+  ========================================================================== */
+  .section-pad{ padding:130px 0; }
+  .section-head{ max-width:640px; margin-bottom:64px; }
+  .section-head.center{ margin-left:auto; margin-right:auto; text-align:center; }
+  .divider{ height:1px; background:var(--line); width:100%; }
+
+  /* ==========================================================================
+     COLLECTION
+  ========================================================================== */
+  .collection-grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:1px; background:var(--line); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .product-card{
+    background:var(--ink); padding:48px 40px 44px; display:flex; flex-direction:column;
+    transition:background .5s ease;
+  }
+  .product-card:hover{ background:var(--ink-2); }
+  .product-index{ font-family:var(--font-display); font-size:0.85rem; color:var(--gold); margin-bottom:22px; }
+  .product-figure{ aspect-ratio:3/4; margin-bottom:28px; overflow:hidden; position:relative; background:linear-gradient(160deg, rgba(169,131,90,0.10), rgba(239,231,216,0.03)); }
+  .product-figure svg{ width:100%; height:100%; transition:transform .8s cubic-bezier(.2,.7,.2,1); }
+  .product-card:hover .product-figure svg{ transform:scale(1.07); }
+  .product-name{ font-size:1.35rem; margin-bottom:8px; }
+  .product-family{ font-size:0.78rem; color:var(--gold); letter-spacing:0.06em; margin-bottom:14px; }
+  .product-desc{ color:var(--ivory-dim); font-size:0.92rem; margin-bottom:22px; flex-grow:1; }
+  .product-foot{ display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding-top:18px; }
+  .product-price{ font-family:var(--font-display); font-size:1.05rem; }
+
+  /* ==========================================================================
+     NOTES / FRAGRANCE EXPERIENCE
+  ========================================================================== */
+  .notes-section{ background:var(--ink-2); }
+  .notes-row{ display:grid; grid-template-columns:0.6fr 1.4fr; gap:60px; padding:56px 0; border-bottom:1px solid var(--line); align-items:start; }
+  .notes-row:last-child{ border-bottom:none; }
+  .notes-label{ font-family:var(--font-display); font-size:1.7rem; font-style:italic; color:var(--gold); }
+  .notes-copy{ color:var(--ivory-dim); max-width:56ch; }
+  .notes-list{ margin-top:18px; display:flex; gap:14px; flex-wrap:wrap; }
+  .notes-chip{ font-size:0.82rem; border:1px solid var(--line); padding:7px 16px; color:var(--ivory-dim); }
+
+  /* ==========================================================================
+     ABOUT / ESSENCE
+  ========================================================================== */
+  .essence{ display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+  .essence-quote{
+    font-family:var(--font-display); font-style:italic; font-size:1.5rem; color:var(--ivory);
+    border-left:1px solid var(--gold); padding-left:28px; margin-top:36px;
+  }
+
+  /* ==========================================================================
+     STORY (split)
+  ========================================================================== */
+  .story{ display:grid; grid-template-columns:1fr 1fr; }
+  .story-visual{
+    min-height:560px; background:
+      radial-gradient(ellipse 90% 70% at 30% 20%, rgba(169,131,90,0.16), transparent 55%),
+      var(--ink-2);
+    position:relative; display:flex; align-items:center; justify-content:center;
+    border-right:1px solid var(--line);
+  }
+  .story-visual svg{ width:44%; opacity:0.85; }
+  .story-text{ padding:80px var(--edge); display:flex; flex-direction:column; justify-content:center; }
+  .story-text p + p{ margin-top:18px; }
+
+  /* ==========================================================================
+     SIGNATURE
+  ========================================================================== */
+  .signature-item{ display:grid; grid-template-columns:1fr 1fr; gap:70px; align-items:center; padding:80px 0; border-bottom:1px solid var(--line); }
+  .signature-item:last-child{ border-bottom:none; }
+  .signature-item.rev{ direction:rtl; }
+  .signature-item.rev > *{ direction:ltr; }
+  .signature-visual{ aspect-ratio:4/5; background:linear-gradient(150deg, rgba(169,131,90,0.14), rgba(239,231,216,0.02)); display:flex; align-items:center; justify-content:center; }
+  .signature-visual svg{ width:52%; }
+  .signature-name{ font-size:2rem; margin-bottom:16px; }
+  .signature-desc{ color:var(--ivory-dim); margin-bottom:28px; max-width:48ch; }
+
+  /* ==========================================================================
+     WHY NAQSH
+  ========================================================================== */
+  .why-list{ display:grid; grid-template-columns:repeat(2, 1fr); }
+  .why-item{ display:flex; gap:22px; padding:34px 0; border-bottom:1px solid var(--line); padding-right:40px; }
+  .why-item:nth-child(odd){ border-right:1px solid var(--line); padding-right:40px; }
+  .why-item svg{ width:26px; height:26px; flex-shrink:0; margin-top:4px; }
+  .why-title{ font-size:1.05rem; margin-bottom:6px; }
+  .why-copy{ color:var(--ivory-dim); font-size:0.9rem; max-width:38ch; }
+
+  /* ==========================================================================
+     QUOTE
+  ========================================================================== */
+  .quote-section{
+    min-height:60vh; display:flex; align-items:center; justify-content:center; text-align:center;
+    background:var(--ink-2); border-top:1px solid var(--line); border-bottom:1px solid var(--line);
+  }
+  .quote-section blockquote{
+    font-family:var(--font-display); font-style:italic; font-weight:400;
+    font-size:clamp(1.6rem, 3.4vw, 2.6rem); max-width:820px; line-height:1.4; padding:0 var(--edge);
+  }
+
+  /* ==========================================================================
+     NEWSLETTER
+  ========================================================================== */
+  .newsletter{ text-align:center; }
+  .newsletter h2{ font-size:clamp(2rem, 4vw, 3rem); margin-bottom:20px; }
+  .newsletter form{ display:flex; justify-content:center; gap:0; max-width:480px; margin:44px auto 0; border-bottom:1px solid var(--ivory); }
+  .newsletter input{ flex:1; background:transparent; border:none; color:var(--ivory); padding:14px 4px; font-size:0.95rem; }
+  .newsletter input::placeholder{ color:var(--ivory-dim); }
+  .newsletter button{ background:none; border:none; color:var(--gold); font-size:0.9rem; letter-spacing:0.04em; padding:14px 4px; }
+  .newsletter-note{ margin-top:16px; font-size:0.8rem; color:var(--ivory-dim); }
+
+  /* ==========================================================================
+     CONTACT
+  ========================================================================== */
+  .contact-grid{ display:grid; grid-template-columns:1fr 1fr; gap:60px; }
+  .contact-list{ display:flex; flex-direction:column; }
+  .contact-row{ display:flex; justify-content:space-between; padding:22px 0; border-bottom:1px solid var(--line); }
+  .contact-row span:first-child{ color:var(--ivory-dim); font-size:0.85rem; }
+  .contact-row span:last-child{ text-align:right; }
+
+  /* ==========================================================================
+     FOOTER
+  ========================================================================== */
+  footer{ border-top:1px solid var(--line); padding:70px 0 34px; }
+  .footer-top{ display:grid; grid-template-columns:1.2fr 0.6fr 0.6fr 0.9fr; gap:40px; margin-bottom:60px; }
+  .footer-statement{ color:var(--ivory-dim); font-size:0.92rem; max-width:34ch; margin-top:16px; }
+  .footer-col h4{ font-family:var(--font-body); font-weight:500; font-size:0.82rem; color:var(--ivory-dim); letter-spacing:0.04em; margin-bottom:18px; }
+  .footer-col a{ display:block; font-size:0.9rem; color:var(--ivory-dim); margin-bottom:12px; transition:color .3s ease; }
+  .footer-col a:hover{ color:var(--ivory); }
+  .footer-bottom{ display:flex; justify-content:space-between; padding-top:28px; border-top:1px solid var(--line); font-size:0.8rem; color:var(--ivory-dim); flex-wrap:wrap; gap:12px; }
+
+  /* ==========================================================================
+     FLOATING CTA
+  ========================================================================== */
+  .float-cta{
+    position:fixed; bottom:28px; right:28px; z-index:900;
+    background:var(--ivory); color:var(--ink); padding:14px 24px; font-size:0.82rem;
+    opacity:0; transform:translateY(14px); pointer-events:none;
+    transition:opacity .4s ease, transform .4s ease;
+  }
+  .float-cta.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+
+  /* ==========================================================================
+     RESPONSIVE
+  ========================================================================== */
+  @media (max-width:980px){
+    nav.links{ display:none; }
+    .hamburger{ display:flex; }
+    .hero-inner{ grid-template-columns:1fr; }
+    .hero-mark{ position:relative; right:auto; top:auto; transform:none; width:80%; margin-top:50px; opacity:0.5; }
+    .essence, .story, .contact-grid{ grid-template-columns:1fr; }
+    .story-visual{ min-height:340px; border-right:none; border-bottom:1px solid var(--line); }
+    .signature-item, .signature-item.rev{ grid-template-columns:1fr; direction:ltr; }
+    .collection-grid{ grid-template-columns:1fr 1fr; }
+    .why-list{ grid-template-columns:1fr; }
+    .why-item:nth-child(odd){ border-right:none; }
+    .notes-row{ grid-template-columns:1fr; gap:18px; }
+    .footer-top{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:620px){
+    .collection-grid{ grid-template-columns:1fr; }
+    .hero-cta{ flex-direction:column; align-items:flex-start; gap:20px; }
+    .footer-top{ grid-template-columns:1fr; }
+    .float-cta{ right:16px; bottom:16px; }
+  }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:1px solid var(--gold); outline-offset:3px;
+  }
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ==========================================================================
+     HEADER
+========================================================================== -->
+<header id="site-header">
+  <div class="wrap nav-inner">
+    <a href="#top" class="logo">NAQSH</a>
+    <nav class="links">
+      <a href="#top">Home</a>
+      <a href="#collection">Collection</a>
+      <a href="#about">About</a>
+      <a href="#story">Our Story</a>
+      <a href="#contact">Contact</a>
+      <a href="#collection" class="btn">Explore Collection</a>
+    </nav>
+    <button class="hamburger" id="hamburger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-panel" id="mobile-panel">
+  <a href="#top">Home</a>
+  <a href="#collection">Collection</a>
+  <a href="#about">About</a>
+  <a href="#story">Our Story</a>
+  <a href="#contact">Contact</a>
+</div>
+
+<!-- ==========================================================================
+     HERO — EDIT ME: headline / subhead text below
+========================================================================== -->
+<section class="hero" id="top">
+  <div class="wrap hero-inner">
+    <div>
+      <span class="kicker-word">NAQSH</span>
+      <h1>Where fragrance<br>becomes <em>identity.</em></h1>
+      <p class="lede">Every scent we compose is an imprint — a mark left in a room after someone has gone, a signature worn rather than sprayed. NAQSH exists for the person who understands that presence is a kind of language.</p>
+      <div class="hero-cta">
+        <a href="#collection" class="btn" id="magnetic-btn">Explore Collection</a>
+        <a href="#about" class="btn-ghost">Discover NAQSH</a>
+      </div>
+    </div>
+    <div></div>
+  </div>
+
+  <!-- decorative etched mark — purely visual, no edit needed -->
+  <svg class="hero-mark" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path d="M120 400 L120 100 L380 400 L380 100" stroke="#A9835A" stroke-width="1" stroke-opacity="0.55"/>
+    <circle cx="250" cy="250" r="190" stroke="#EFE7D8" stroke-width="0.6" stroke-opacity="0.18"/>
+    <circle cx="250" cy="250" r="150" stroke="#EFE7D8" stroke-width="0.6" stroke-opacity="0.12"/>
+  </svg>
+</section>
+
+<!-- ==========================================================================
+     COLLECTION — product data rendered from CONFIG.products via JS
+========================================================================== -->
+<section class="section-pad" id="collection">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">The Collection</span>
+      <h2>Six fragrances, each a different mark.</h2>
+      <p class="lede" style="margin-top:18px;">No two people wear NAQSH the same way. Browse the current collection below — add, remove or edit any entry from the CONFIG object without touching this layout.</p>
+    </div>
+  </div>
+  <div class="collection-grid" id="collection-grid"><!-- populated by JS --></div>
+</section>
+
+<!-- ==========================================================================
+     NOTES / FRAGRANCE EXPERIENCE
+========================================================================== -->
+<section class="notes-section section-pad" id="notes">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">The Composition</span>
+      <h2>How a NAQSH fragrance unfolds.</h2>
+    </div>
+    <div id="notes-rows"><!-- populated by JS --></div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     ABOUT / ESSENCE — EDIT ME: philosophy copy below
+========================================================================== -->
+<section class="section-pad" id="about">
+  <div class="wrap essence">
+    <div class="reveal">
+      <span class="eyebrow">The Essence of NAQSH</span>
+      <h2>An imprint, not an announcement.</h2>
+    </div>
+    <div class="reveal">
+      <p class="lede" style="max-width:52ch;">In Urdu and Arabic, <em style="font-style:italic;">naqsh</em> means an engraving — a mark pressed into something and left there. That is the idea we build every fragrance around. Not a scent that arrives loudly and fades, but one that settles into memory the way a carved line settles into stone.</p>
+      <p class="essence-quote">We don't make perfumes to be noticed. We make them to be remembered.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     OUR STORY — EDIT ME: narrative copy below
+========================================================================== -->
+<section id="story">
+  <div class="story">
+    <div class="story-visual reveal">
+      <svg viewBox="0 0 300 400" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M150 40 C 90 40 70 100 70 160 L 70 320 C 70 350 100 370 150 370 C 200 370 230 350 230 320 L 230 160 C 230 100 210 40 150 40 Z" stroke="#EFE7D8" stroke-width="1" stroke-opacity="0.4"/>
+        <line x1="150" y1="40" x2="150" y2="10" stroke="#A9835A" stroke-width="1"/>
+        <rect x="130" y="10" width="40" height="20" stroke="#A9835A" stroke-width="1"/>
+      </svg>
+    </div>
+    <div class="story-text reveal">
+      <span class="eyebrow">Our Story</span>
+      <h2 style="margin-bottom:22px;">Founded on a single idea.</h2>
+      <p>NAQSH began with a question: why does a fragrance have to disappear the moment you stop thinking about it? We wanted to build scents that behave more like memory — returning at unexpected moments, attached to a person rather than a product.</p>
+      <p>What started as a small atelier experimenting with unconventional accords has become a house with a defined language: restraint over spectacle, character over trend, and every formula built to be worn for years rather than a single season.</p>
+      <p>Every bottle that leaves NAQSH carries that same intention — to be a mark someone else remembers you by.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     SIGNATURE / BESTSELLERS
+========================================================================== -->
+<section class="section-pad" id="signature">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Signature Fragrances</span>
+      <h2>The house's defining scents.</h2>
+    </div>
+    <div id="signature-list"><!-- populated by JS --></div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     WHY NAQSH
+========================================================================== -->
+<section class="section-pad" style="padding-top:0;">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">Why NAQSH</span>
+      <h2>Crafted with intention, worn with character.</h2>
+    </div>
+    <div class="why-list" id="why-list"><!-- populated by JS --></div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     QUOTE — EDIT ME: quote text below
+========================================================================== -->
+<section class="quote-section">
+  <blockquote class="reveal">"A fragrance does not simply follow you. It becomes part of the memory you leave behind."</blockquote>
+</section>
+
+<!-- ==========================================================================
+     NEWSLETTER — EDIT ME: heading / copy below
+========================================================================== -->
+<section class="section-pad newsletter">
+  <div class="wrap">
+    <span class="eyebrow">Stay Close</span>
+    <h2 class="reveal">Enter the world of NAQSH.</h2>
+    <p class="lede" style="margin:0 auto;">New fragrances, atelier notes and early access — sent rarely, and only when it's worth your time.</p>
+    <form onsubmit="event.preventDefault(); alert('Connect this form to your email provider — see EDIT ME: CONFIG for guidance.');">
+      <input type="email" placeholder="Your email address" required>
+      <button type="submit">Subscribe</button>
+    </form>
+    <p class="newsletter-note">No spam. Unsubscribe anytime.</p>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     CONTACT — all values pulled from CONFIG
+========================================================================== -->
+<section class="section-pad" id="contact">
+  <div class="wrap contact-grid">
+    <div class="reveal">
+      <span class="eyebrow">Contact</span>
+      <h2>We'd like to hear from you.</h2>
+      <p class="lede" style="margin-top:18px;">For press, stockist or collaboration enquiries, reach us directly using the details below.</p>
+    </div>
+    <div class="contact-list reveal" id="contact-list"><!-- populated by JS --></div>
+  </div>
+</section>
+
+<!-- ==========================================================================
+     FOOTER
+========================================================================== -->
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
+      <div>
+        <a href="#top" class="logo">NAQSH</a>
+        <p class="footer-statement">A luxury fragrance house built on the idea of the imprint — scent as a mark you leave behind.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Navigate</h4>
+        <a href="#collection">Collection</a>
+        <a href="#about">About</a>
+        <a href="#story">Our Story</a>
+        <a href="#contact">Contact</a>
+      </div>
+      <div class="footer-col" id="footer-social">
+        <h4>Follow</h4>
+        <!-- populated by JS -->
+      </div>
+      <div class="footer-col" id="footer-contact">
+        <h4>Contact</h4>
+        <!-- populated by JS -->
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year"></span> NAQSH. All rights reserved.</span>
+      <span>Designed as a distinct, original identity — no house is imitated.</span>
+    </div>
+  </div>
+</footer>
+
+<a href="#collection" class="float-cta" id="float-cta">Explore Collection</a>
+
+<script>
+/* ============================================================================
+   EDIT ME: CONFIG
+   ----------------------------------------------------------------------------
+   Everything editable without touching layout/design lives in this object.
+   Add as many products as you like — the grid and signature section adapt
+   automatically. Leave any field as an empty string "" to hide that row.
+============================================================================ */
+const CONFIG = {
+
+  brand: {
+    name: "NAQSH",
+    tagline: "Where Fragrance Becomes Identity."
+  },
+
+  contact: {
+    email: "awais364sheikh@gmail.com",
+    phone: "+92339333642",
+    whatsapp: "+923393336492",
+    address: "Studio address — Karachi, Pakistan"
+  },
+
+  social: {
+    instagram: "#",
+    facebook: "#",
+    tiktok: "#"
+  },
+
+  // Fragrance notes — shown in "The Composition" section, in order.
+  notes: [
+    { label: "Top Notes",  copy: "The first impression — bright, immediate, gone within minutes. What someone notices before they notice you." },
+    { label: "Heart Notes", copy: "The character of the fragrance. This is what settles in once the top notes fade, and what people begin to associate with you specifically." },
+    { label: "Base Notes", copy: "What remains hours later, on skin and fabric. The part of the scent that becomes memory rather than perfume." }
+  ],
+
+  // Why NAQSH — trust points, shown as a simple two-column list.
+  principles: [
+    { title: "Crafted with intention", copy: "Every formula is developed over months, not weeks, before it earns the NAQSH name." },
+    { title: "Distinctive by design", copy: "We don't chase what's trending — each fragrance is built to stand apart, not fit in." },
+    { title: "Long-lasting character", copy: "Concentrations are chosen for longevity on skin, not just first impression on paper." },
+    { title: "Made for individuality", copy: "Nothing in the collection is designed to be universally liked. It's designed to be personally worn." }
+  ],
+
+  // Full product collection — rendered as cards in "The Collection" section.
+  products: [
+    { name: "Nishaan",   family: "Amber · Oud",       desc: "A dense, resinous amber warmed by dark oud — built for evening.", price: "PKR —" },
+    { name: "Safar",     family: "Citrus · Woods",     desc: "Bright bergamot over cedar and vetiver, restless and clean.", price: "PKR —" },
+    { name: "Khamosh",   family: "Musk · Iris",        desc: "Powdery iris over skin musk — quiet, close, deliberate.", price: "PKR —" },
+    { name: "Zaraf",     family: "Saffron · Leather",  desc: "Spiced saffron laid over smooth leather and dry woods.", price: "PKR —" },
+    { name: "Rooh",      family: "White Florals",      desc: "Tuberose and jasmine, restrained rather than sweet.", price: "PKR —" },
+    { name: "Ateeq",     family: "Incense · Amber",    desc: "Smoky incense wrapped in soft amber — an old-world signature.", price: "PKR —" }
+  ],
+
+  // Signature / bestseller feature — reference product names from above.
+  signature: ["Nishaan", "Khamosh"]
+};
+
+/* ============================================================================
+   RENDERING — reads CONFIG above and builds the dynamic sections.
+   You shouldn't need to edit anything below this line.
+============================================================================ */
+
+// Reusable line-art bottle placeholder, tinted per index
+function bottleSVG(seed){
+  const hue = (seed * 47) % 40 - 20; // subtle variation
+  return `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="filter:hue-rotate(${hue}deg)">
+    <path d="M100 30 C 65 30 50 75 50 115 L 50 220 C 50 238 72 250 100 250 C 128 250 150 238 150 220 L 150 115 C 150 75 135 30 100 30 Z"
+      fill="none" stroke="#A9835A" stroke-width="1" stroke-opacity="0.7"/>
+    <rect x="82" y="6" width="36" height="26" fill="none" stroke="#EFE7D8" stroke-width="1" stroke-opacity="0.4"/>
+    <line x1="100" y1="32" x2="100" y2="6" stroke="#EFE7D8" stroke-width="1" stroke-opacity="0.4"/>
+    <rect x="60" y="140" width="80" height="46" fill="none" stroke="#EFE7D8" stroke-width="0.6" stroke-opacity="0.3"/>
+  </svg>`;
+}
+
+// Collection grid
+const grid = document.getElementById('collection-grid');
+CONFIG.products.forEach((p, i) => {
+  const card = document.createElement('div');
+  card.className = 'product-card';
+  card.innerHTML = `
+    <span class="product-index">No. ${String(i+1).padStart(2,'0')}</span>
+    <div class="product-figure">${bottleSVG(i)}</div>
+    <h3 class="product-name">${p.name}</h3>
+    <span class="product-family">${p.family}</span>
+    <p class="product-desc">${p.desc}</p>
+    <div class="product-foot">
+      <span class="product-price">${p.price}</span>
+      <a href="#" class="btn-ghost">View details</a>
+    </div>`;
+  grid.appendChild(card);
+});
+
+// Notes rows
+const notesWrap = document.getElementById('notes-rows');
+CONFIG.notes.forEach(n => {
+  const row = document.createElement('div');
+  row.className = 'notes-row reveal';
+  row.innerHTML = `
+    <div class="notes-label">${n.label}</div>
+    <div class="notes-copy">${n.copy}</div>`;
+  notesWrap.appendChild(row);
+});
+
+// Signature section
+const sigWrap = document.getElementById('signature-list');
+CONFIG.signature.forEach((name, i) => {
+  const product = CONFIG.products.find(p => p.name === name);
+  if(!product) return;
+  const item = document.createElement('div');
+  item.className = 'signature-item reveal' + (i % 2 ? ' rev' : '');
+  item.innerHTML = `
+    <div class="signature-visual">${bottleSVG(i+10)}</div>
+    <div>
+      <span class="eyebrow">Signature</span>
+      <h3 class="signature-name">${product.name}</h3>
+      <p class="signature-desc">${product.desc} A defining scent within the NAQSH collection — one of the fragrances the house is most recognised for.</p>
+      <a href="#collection" class="btn">View ${product.name}</a>
+    </div>`;
+  sigWrap.appendChild(item);
+});
+
+// Why list
+const whyIcons = [
+  `<circle cx="13" cy="13" r="10" stroke="#A9835A" stroke-width="1"/><path d="M8 13l3 3 6-6" stroke="#A9835A" stroke-width="1" fill="none"/>`,
+  `<path d="M13 2v22M2 13h22" stroke="#A9835A" stroke-width="1"/>`,
+  `<circle cx="13" cy="13" r="10" stroke="#A9835A" stroke-width="1"/><circle cx="13" cy="13" r="4" stroke="#A9835A" stroke-width="1"/>`,
+  `<path d="M13 3l3 7h7l-6 5 2 7-6-4-6 4 2-7-6-5h7z" stroke="#A9835A" stroke-width="1" fill="none"/>`
+];
+const whyWrap = document.getElementById('why-list');
+CONFIG.principles.forEach((p, i) => {
+  const item = document.createElement('div');
+  item.className = 'why-item reveal';
+  item.innerHTML = `
+    <svg viewBox="0 0 26 26">${whyIcons[i % whyIcons.length]}</svg>
+    <div>
+      <div class="why-title">${p.title}</div>
+      <div class="why-copy">${p.copy}</div>
+    </div>`;
+  whyWrap.appendChild(item);
+});
+
+// Contact list
+const contactRows = [
+  ['Email', CONFIG.contact.email],
+  ['Phone', CONFIG.contact.phone],
+  ['WhatsApp', CONFIG.contact.whatsapp],
+  ['Address', CONFIG.contact.address]
+];
+const contactList = document.getElementById('contact-list');
+contactRows.forEach(([label, value]) => {
+  if(!value) return;
+  const row = document.createElement('div');
+  row.className = 'contact-row';
+  row.innerHTML = `<span>${label}</span><span>${value}</span>`;
+  contactList.appendChild(row);
+});
+
+// Footer social + contact
+const footerSocial = document.getElementById('footer-social');
+Object.entries(CONFIG.social).forEach(([name, url]) => {
+  if(!url) return;
+  const a = document.createElement('a');
+  a.href = url;
+  a.textContent = name.charAt(0).toUpperCase() + name.slice(1);
+  footerSocial.appendChild(a);
+});
+const footerContact = document.getElementById('footer-contact');
+[['Email', CONFIG.contact.email], ['Phone', CONFIG.contact.phone]].forEach(([label, value]) => {
+  if(!value) return;
+  const a = document.createElement('a');
+  a.href = label === 'Email' ? `mailto:${value}` : `tel:${value}`;
+  a.textContent = value;
+  footerContact.appendChild(a);
+});
+
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ============================================================================
+   INTERACTIONS
+============================================================================ */
+
+// Header scroll state + progress bar
+const header = document.getElementById('site-header');
+const progress = document.getElementById('progress');
+const floatCta = document.getElementById('float-cta');
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  header.classList.toggle('scrolled', y > 40);
+  const max = document.documentElement.scrollHeight - window.innerHeight;
+  progress.style.width = (max > 0 ? (y / max) * 100 : 0) + '%';
+  floatCta.classList.toggle('show', y > window.innerHeight * 1.2);
+}, { passive: true });
+
+// Mobile menu
+const hamburger = document.getElementById('hamburger');
+const mobilePanel = document.getElementById('mobile-panel');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobilePanel.classList.toggle('open');
+});
+mobilePanel.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+  hamburger.classList.remove('open');
+  mobilePanel.classList.remove('open');
+}));
+
+// Scroll reveal
+const revealEls = document.querySelectorAll('.reveal');
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('in');
+      io.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+revealEls.forEach(el => io.observe(el));
+
+// Subtle magnetic effect on primary hero CTA (desktop only)
+const magnetic = document.getElementById('magnetic-btn');
+if(window.matchMedia('(hover: hover)').matches){
+  magnetic.addEventListener('mousemove', (e) => {
+    const r = magnetic.getBoundingClientRect();
+    const x = (e.clientX - r.left - r.width / 2) * 0.25;
+    const y = (e.clientY - r.top - r.height / 2) * 0.4;
+    magnetic.style.transform = `translate(${x}px, ${y}px)`;
+  });
+  magnetic.addEventListener('mouseleave', () => { magnetic.style.transform = 'translate(0,0)'; });
+}
+</script>
+</body>
+</html>
